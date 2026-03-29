@@ -6,9 +6,14 @@ import { LoadingSkeleton } from "./LoadingSkeleton";
 interface WeatherSummaryProps {
   weather?: WeatherResponse;
   isLoading: boolean;
+  isHistorical?: boolean;
 }
 
-export function WeatherSummary({ weather, isLoading }: WeatherSummaryProps) {
+export function WeatherSummary({
+  weather,
+  isLoading,
+  isHistorical = false,
+}: WeatherSummaryProps) {
   if (isLoading || !weather) {
     return (
       <section className="panel p-5 sm:p-6">
@@ -26,7 +31,11 @@ export function WeatherSummary({ weather, isLoading }: WeatherSummaryProps) {
         </div>
         <div>
           <h2 className="text-xl font-semibold tracking-tight">Weather summary</h2>
-          <p className="mt-1 text-sm muted">A natural-language read on current conditions.</p>
+          <p className="mt-1 text-sm muted">
+            {isHistorical
+              ? "A natural-language read on the selected day's recorded conditions."
+              : "A natural-language read on current conditions."}
+          </p>
         </div>
       </div>
       <p className="mt-5 text-sm leading-7 muted">{buildWeatherSummary(weather)}</p>

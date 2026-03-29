@@ -1,7 +1,9 @@
 import { Droplets, Heart, Thermometer, Wind } from "lucide-react";
 import type { WeatherResponse } from "@/types/weather";
+import { formatDay } from "@/utils/formatters";
 import { formatTemperature, formatWindSpeed } from "@/utils/formatters";
 import { normalizeWeatherIcon } from "@/utils/weatherIcons";
+import { HistoricalDatePicker } from "./HistoricalDatePicker";
 import { MetricCard } from "./MetricCard";
 import { LoadingSkeleton } from "./LoadingSkeleton";
 
@@ -11,6 +13,8 @@ interface WeatherOverviewProps {
   isFetching: boolean;
   isFavorite: boolean;
   onToggleFavorite: () => void;
+  historicalDate: string;
+  onHistoricalDateChange: (value: string) => void;
 }
 
 export function WeatherOverview({
@@ -19,6 +23,8 @@ export function WeatherOverview({
   isFetching,
   isFavorite,
   onToggleFavorite,
+  historicalDate,
+  onHistoricalDateChange,
 }: WeatherOverviewProps) {
   if (isLoading || !weather) {
     return (
@@ -36,10 +42,15 @@ export function WeatherOverview({
 
   return (
     <section className="panel p-5 sm:p-6">
+      <HistoricalDatePicker value={historicalDate} onChange={onHistoricalDateChange} />
+
       <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+        <div className="mt-6">
           <p className="muted text-sm">
             {weather.location.name}, {weather.location.country}
+          </p>
+          <p className="mt-2 text-sm font-medium text-skyGlow">
+            {historicalDate ? `Historical weather for ${formatDay(historicalDate)}` : "Live conditions"}
           </p>
           <div className="mt-4 flex items-end gap-4">
             <div>
@@ -92,8 +103,10 @@ export function WeatherOverview({
           icon={<Wind className="h-4 w-4" />}
         />
         <MetricCard
-          label="Updated"
-          value={isFetching ? "Refreshing..." : "Live now"}
+          label={historicalDate ? "Recorded" : "Updated"}
+          value={
+            historicalDate ? formatDay(historicalDate) : isFetching ? "Refreshing..." : "Live now"
+          }
           icon={<Heart className="h-4 w-4" />}
         />
       </div>

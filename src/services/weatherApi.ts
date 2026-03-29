@@ -1,4 +1,8 @@
-import type { CitySearchResult, WeatherResponse } from "@/types/weather";
+import type {
+  CitySearchResult,
+  HistoricalWeatherResponse,
+  WeatherResponse,
+} from "@/types/weather";
 
 const API_BASE_URL = "https://api.weatherapi.com/v1";
 const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
@@ -36,5 +40,12 @@ export function getWeatherForecast(city: string) {
     days: "3",
     aqi: "no",
     alerts: "no",
+  });
+}
+
+export function getHistoricalWeather(city: string, date: string) {
+  return request<HistoricalWeatherResponse>("history.json", {
+    q: city,
+    dt: date,
   });
 }

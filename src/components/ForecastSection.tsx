@@ -6,9 +6,14 @@ import { LoadingSkeleton } from "./LoadingSkeleton";
 interface ForecastSectionProps {
   weather?: WeatherResponse;
   isLoading: boolean;
+  isHistorical?: boolean;
 }
 
-export function ForecastSection({ weather, isLoading }: ForecastSectionProps) {
+export function ForecastSection({
+  weather,
+  isLoading,
+  isHistorical = false,
+}: ForecastSectionProps) {
   if (isLoading || !weather) {
     return (
       <section className="panel p-5 sm:p-6">
@@ -32,8 +37,14 @@ export function ForecastSection({ weather, isLoading }: ForecastSectionProps) {
     <section className="panel p-5 sm:p-6">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight">Short-term forecast</h2>
-          <p className="mt-1 text-sm muted">A quick scan of the next few hours and days.</p>
+          <h2 className="text-xl font-semibold tracking-tight">
+            {isHistorical ? "Historical breakdown" : "Short-term forecast"}
+          </h2>
+          <p className="mt-1 text-sm muted">
+            {isHistorical
+              ? "A replay of the selected day's conditions and hourly pattern."
+              : "A quick scan of the next few hours and days."}
+          </p>
         </div>
       </div>
 

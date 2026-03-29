@@ -10,15 +10,19 @@ import { WeatherShell } from "@/components/WeatherShell";
 import { EmptyState } from "@/components/EmptyState";
 import { ErrorState } from "@/components/ErrorState";
 import { useFavorites } from "@/hooks/useFavorites";
+import { useHistoricalWeather } from "@/hooks/useHistoricalWeather";
 import { useWeather } from "@/hooks/useWeather";
 import { useWeatherSearch } from "@/hooks/useWeatherSearch";
 import type { CitySearchResult } from "@/types/weather";
+import { isFutureDate } from "@/utils/date";
+import { adaptHistoricalWeather } from "@/utils/weatherHistory";
 
 const DEFAULT_CITY = "Berlin";
 
 function App() {
   const [selectedCity, setSelectedCity] = useState<string>(DEFAULT_CITY);
   const [searchInput, setSearchInput] = useState<string>(DEFAULT_CITY);
+  const [historicalDate, setHistoricalDate] = useState<string>("");
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const {
     data: weather,
@@ -31,6 +35,13 @@ function App() {
     isLoading: isSearchLoading,
     hasSearched,
   } = useWeatherSearch(searchInput);
+  const safeHistoricalDate = isFutureDate(historicalDate) ? "" : historicalDate;
+  const {
+    data: historicalWeather,
+    isLoading: isHistoricalLoading,
+    isFetching: isHistoricalFetching,
+    error: historicalWeatherError,
+  } = useHistoricalWeather(selectedCity, safeHistoricalDate);
 
   useEffect(() => {
     if (favorites.length === 0) {
@@ -60,12 +71,21 @@ function App() {
     setSearchInput(cityName);
   };
 
-  const favoriteCity = weather
+  const displayWeather =
+    safeHistoricalDate && historicalWeather
+      ? adaptHistoricalWeather(historicalWeather)
+      : weather;
+  const isHistoricalMode = Boolean(safeHistoricalDate);
+  const isDisplayLoading = isHistoricalMode ? isHistoricalLoading : isWeatherLoading;
+  const isDisplayFetching = isHistoricalMode ? isHistoricalFetching : isWeatherFetching;
+  const displayError = isHistoricalMode ? historicalWeatherError : weatherError;
+
+  const favoriteCity = displayWeather
     ? {
-        id: `${weather.location.name}-${weather.location.country}`,
-        name: `${weather.location.name}, ${weather.location.country}`,
-        region: weather.location.region,
-        country: weather.location.country,
+        id: `${displayWeather.location.name}-${displayWeather.location.country}`,
+        name: `${displayWeather.location.name}, ${displayWeather.location.country}`,
+        region: displayWeather.location.region,
+        country: displayWeather.location.country,
       }
     : null;
 
@@ -128,38 +148,48 @@ function App() {
         </div>
       </section>
 
-      {weatherError ? (
+      {displayError ? (
         <ErrorState
           title="Weather data is unavailable"
           description={
-            weatherError instanceof Error
-              ? weatherError.message
+            displayError instanceof Error
+              ? displayError.message
               : "Please check your API key and try another city."
           }
         />
       ) : null}
 
-      {!weather && !isWeatherLoading && !weatherError ? (
+      {!displayWeather && !isDisplayLoading && !displayError ? (
         <EmptyState />
       ) : (
         <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
           <div className="space-y-6">
             <WeatherOverview
-              weather={weather}
-              isLoading={isWeatherLoading}
-              isFetching={isWeatherFetching}
+              weather={displayWeather}
+              isLoading={isDisplayLoading}
+              isFetching={isDisplayFetching}
               isFavorite={favoriteCity ? isFavorite(favoriteCity.name) : false}
               onToggleFavorite={() => {
                 if (favoriteCity) {
                   toggleFavorite(favoriteCity);
                 }
               }}
+              historicalDate={safeHistoricalDate}
+              onHistoricalDateChange={setHistoricalDate}
             />
-            <ForecastSection weather={weather} isLoading={isWeatherLoading} />
+            <ForecastSection
+              weather={displayWeather}
+              isLoading={isDisplayLoading}
+              isHistorical={isHistoricalMode}
+            />
           </div>
 
           <div className="space-y-6">
-            <WeatherSummary weather={weather} isLoading={isWeatherLoading} />
+            <WeatherSummary
+              weather={displayWeather}
+              isLoading={isDisplayLoading}
+              isHistorical={isHistoricalMode}
+            />
           </div>
         </div>
       )}

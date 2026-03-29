@@ -58,11 +58,19 @@ export interface ForecastHour {
   chance_of_rain: number;
   condition: WeatherCondition;
   wind_kph: number;
+  is_day?: number;
 }
 
 export interface WeatherResponse {
   location: WeatherLocation;
   current: CurrentWeather;
+  forecast: {
+    forecastday: ForecastDay[];
+  };
+}
+
+export interface HistoricalWeatherResponse {
+  location: WeatherLocation;
   forecast: {
     forecastday: ForecastDay[];
   };
