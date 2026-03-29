@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --bg-primary: 245 248 252;
+    --bg-panel: 255 255 255;
+    --bg-soft: 232 240 249;
+    --text-primary: 7 17 31;
+    --text-secondary: 80 97 122;
+    --border: 198 214 229;
+  }
+
+  .dark {
+    color-scheme: dark;
+    --bg-primary: 6 12 23;
+    --bg-panel: 10 20 36;
+    --bg-soft: 18 31 52;
+    --text-primary: 235 244 255;
+    --text-secondary: 154 173 198;
+    --border: 56 74 102;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply min-h-screen bg-[rgb(var(--bg-primary))] font-sans text-[rgb(var(--text-primary))] antialiased transition-colors duration-300;
+    background-image:
+      radial-gradient(circle at top left, rgba(119, 198, 255, 0.18), transparent 28%),
+      radial-gradient(circle at 85% 12%, rgba(158, 231, 215, 0.16), transparent 22%);
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply rounded-[28px] border border-[rgb(var(--border))]/60 bg-[rgb(var(--bg-panel))]/90 shadow-panel backdrop-blur-xl;
+  }
+
+  .muted {
+    @apply text-[rgb(var(--text-secondary))];
+  }
+}
