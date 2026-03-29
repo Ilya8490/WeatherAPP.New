@@ -1,6 +1,6 @@
 # SkyCast Weather
 
-A production-ready weather application scaffold built with React, TypeScript, Tailwind CSS, and TanStack Query.
+A responsive weather application built with React, TypeScript, Tailwind CSS, and TanStack Query. It includes global city search, live current conditions, short-term forecasts, favorites stored in local storage, and a modern responsive UI.
 
 ## Stack
 
