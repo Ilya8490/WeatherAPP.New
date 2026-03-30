@@ -13,7 +13,7 @@ A responsive weather application built with React, TypeScript, Tailwind CSS, and
 ## Setup
 
 1. Copy `.env.example` to `.env`
-2. Add your WeatherAPI key as `VITE_WEATHER_API_KEY`
+2. Add your WeatherAPI key as `WEATHER_API_KEY`
 3. Install dependencies with `npm install`
 4. Start the app with `npm run dev`
 
